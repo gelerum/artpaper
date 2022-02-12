@@ -4,7 +4,7 @@ services:
   api:
     build:
       context: ./
-      dockerfile: Dockerfile.api
+      dockerfile: api.Dockerfile
     ports:
       - "8080:8080"
     environment:
@@ -26,7 +26,7 @@ services:
   db:
     build:
       context: ./
-      dockerfile: Dockerfile.db
+      dockerfile: db.Dockerfile
     volumes:
       - ./data/db:/var/lib/postgresql/data:z
     ports:
