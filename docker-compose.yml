@@ -1,0 +1,56 @@
+version: "3.3"
+
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile.api
+    ports:
+      - "8080:8080"
+    environment:
+      GIN_MODE: ${GIN_MODE}
+      APP_PORT: ${APP_PORT}
+      JWT_SIGN_KEY: ${JWT_SIGN_KEY}
+      PASSWORD_SALT: ${PASSWORD_SALT}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TOKEN_STORAGE_PASSWORD: ${TOKEN_STORAGE_PASSWORD}
+      TOKEN_STORAGE_HOST: ${TOKEN_STORAGE_HOST}
+      TOKEN_STORAGE_PORT: ${TOKEN_STORAGE_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    build:
+      context: ./
+      dockerfile: Dockerfile.db
+    volumes:
+      - ./data/db:/var/lib/postgresql/data:z
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  token_storage:
+    image: redis:6.2.6-alpine3.15
+    command: redis-server --requirepass ${TOKEN_STORAGE_PASSWORD}
+    ports:
+      - 6379:6379
+  cache:
+    image: redis:6.2.6-alpine3.15
+    command: redis-server --requirepass ${CACHE_PASSWORD}
+    ports:
+      - 6378:6379

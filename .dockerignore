@@ -1,0 +1,8 @@
+.gitignore
+data/
+docker-compose.yml
+Dockerfile*
+.vscode/
+.env
+commands.txt
+.dev.env
