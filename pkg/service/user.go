@@ -28,7 +28,7 @@ func (s *Service) DeleteUser(username string) (err error) {
 	return
 }
 
-func (s *Service) FindUsers(pattern string, quantity int) (users []model.User, err error) {
+func (s *Service) FindUsers(pattern string, quantity int) (users []model.FindUsers, err error) {
 	users, err = s.database.FindUsers(pattern, quantity)
 	return
 }

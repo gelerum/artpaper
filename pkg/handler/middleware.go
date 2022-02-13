@@ -12,10 +12,14 @@ import (
 )
 
 func (h *Handler) AuthValidToken(ctx *gin.Context) {
+	if len(strings.Split(ctx.Request.Header["Authorization"][0], " ")) != 2 {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, model.ErrorResponse{Message: "Invalid authorization header"})
+		return
+	}
 	accessToken := strings.Split(ctx.Request.Header["Authorization"][0], " ")[1]
 	username, valid := service.ValidateToken(accessToken, "access")
 	if !valid {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Ivalid token"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, model.ErrorResponse{Message: "Ivalid token"})
 		return
 	}
 	ctx.Set("username", username)
@@ -24,7 +28,7 @@ func (h *Handler) AuthValidToken(ctx *gin.Context) {
 
 func (h *Handler) AuthUsernameParam(ctx *gin.Context) {
 	if ctx.Param("username") != ctx.GetString("username") {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Doesn't have access"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, model.ErrorResponse{Message: "Doesn't have access"})
 		return
 	}
 	ctx.Next()
@@ -33,21 +37,25 @@ func (h *Handler) AuthUsernameParam(ctx *gin.Context) {
 func (h *Handler) AuthOwnership(ctx *gin.Context) {
 	_, _, _, username, err := h.service.GetArticle(ctx.Param("articlename"))
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, model.ErrorResponse{Message: err.Error()})
 		return
 	}
 	if username != ctx.GetString("username") {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Doesn't have access"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, model.ErrorResponse{Message: "Doesn't have access"})
 		return
 	}
 	ctx.Next()
 }
 
 func (h *Handler) AuthRefreshTokenExists(ctx *gin.Context) {
+	if len(strings.Split(ctx.Request.Header["Authorization"][0], " ")) != 2 {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, model.ErrorResponse{Message: "Invalid authorization header"})
+		return
+	}
 	refreshToken := strings.Split(ctx.Request.Header["Authorization"][0], " ")[1]
 	username, err := h.service.GetDelRefreshToken(refreshToken)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, model.ErrorResponse{Message: err.Error()})
 		return
 	}
 	ctx.Set("username", username)
@@ -58,11 +66,11 @@ func (h *Handler) AuthArticleBodyUsername(ctx *gin.Context) {
 	var article model.Article
 	err := ctx.ShouldBindBodyWith(&article, binding.JSON)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, model.ErrorResponse{Message: err.Error()})
 		return
 	}
 	if article.Username != ctx.GetString("username") {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Doesn't have access"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, model.ErrorResponse{Message: "Doesn't have access"})
 		return
 	}
 }
@@ -86,8 +94,8 @@ func (h *Handler) UploadArticleCache(ctx *gin.Context) {
 		log.Println("Handler doesn't upload article to middleware")
 		return
 	}
-	article := value.(map[string]string)
-	h.service.UploadArticleCache("/article/get/"+ctx.Param("articlename"), article["title"], article["body"], article["creationDate"], article["username"])
+	article := value.(model.GetArticle)
+	h.service.UploadArticleCache("/article/get/"+ctx.Param("articlename"), article.Title, article.Body, article.CreationDate, article.Username)
 }
 
 func (h *Handler) LoadUserCache(ctx *gin.Context) {
@@ -109,6 +117,6 @@ func (h *Handler) UploadUserCache(ctx *gin.Context) {
 		log.Println("Handler doesn't upload article to middleware")
 		return
 	}
-	user := value.(map[string]string)
-	h.service.UploadUserCache("/user/get/"+ctx.Param("username"), user["name"])
+	user := value.(model.GetUser)
+	h.service.UploadUserCache("/user/get/"+ctx.Param("username"), user.Name)
 }

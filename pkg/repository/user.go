@@ -39,7 +39,7 @@ func (r *Repository) DeleteUser(username string) (err error) {
 	return
 }
 
-func (r *Repository) FindUsers(pattern string, quantity int) (users []model.User, err error) {
+func (r *Repository) FindUsers(pattern string, quantity int) (users []model.FindUsers, err error) {
 	pattern += "%"
 	rows, err := r.database.Query("SELECT username, name FROM users WHERE username LIKE $1 OR name LIKE $1 LIMIT $2;", pattern, quantity)
 	if err != nil {
@@ -56,7 +56,7 @@ func (r *Repository) FindUsers(pattern string, quantity int) (users []model.User
 			log.Println(err)
 			return
 		}
-		user := model.User{
+		user := model.FindUsers{
 			Name:     name,
 			Username: username,
 		}

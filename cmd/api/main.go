@@ -14,6 +14,16 @@ import (
 	"github.com/gelerum/artpaper/pkg/storage"
 )
 
+// @title Artpaper API
+// @version 1.0
+// @description REST API of article site
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	tokenStorage, err := storage.NewStorage(os.Getenv("TOKEN_STORAGE_HOST"), os.Getenv("TOKEN_STORAGE_PORT"), os.Getenv("TOKEN_STORAGE_PASSWORD"))
 	if err != nil {

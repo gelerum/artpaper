@@ -1,8 +1,11 @@
 package handler
 
 import (
+	_ "github.com/gelerum/artpaper/docs"
 	"github.com/gelerum/artpaper/pkg/service"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Handler struct {
@@ -20,8 +23,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger())
 
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	router.POST("/login", h.login)
-	router.POST("/refresh/:username", h.AuthRefreshTokenExists, h.AuthUsernameParam, h.refresh)
+	router.POST("/refresh", h.AuthRefreshTokenExists, h.refresh)
 
 	article := router.Group("/article")
 	{
@@ -29,7 +34,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		article.GET("/get/:articlename", h.LoadArticleCache, h.getArticle, h.UploadArticleCache)
 		article.PUT("/update/:articlename", h.AuthValidToken, h.AuthOwnership, h.updateArticle)
 		article.DELETE("/delete/:articlename", h.AuthValidToken, h.AuthOwnership, h.deleteArticle)
-		article.GET("/find", h.getArticles)
+		article.GET("/find", h.findArticles)
 	}
 	user := router.Group("/user")
 	{

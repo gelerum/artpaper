@@ -175,11 +175,11 @@ func TestFindUsers(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	firstUser := model.User{
+	firstUser := model.FindUsers{
 		Username: insertedFirstUsername,
 		Name:     insertedName,
 	}
-	secondUser := model.User{
+	secondUser := model.FindUsers{
 		Username: insertedSecondUsername,
 		Name:     insertedName,
 	}
