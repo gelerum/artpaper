@@ -20,6 +20,9 @@ services:
       TOKEN_STORAGE_PASSWORD: ${TOKEN_STORAGE_PASSWORD}
       TOKEN_STORAGE_HOST: ${TOKEN_STORAGE_HOST}
       TOKEN_STORAGE_PORT: ${TOKEN_STORAGE_PORT}
+      CACHE_PASSWORD: ${CACHE_PASSWORD}
+      CACHE_HOST: ${CACHE_HOST}
+      CACHE_PORT: ${CACHE_PORT}
     depends_on:
       db:
         condition: service_healthy
