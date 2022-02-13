@@ -3,8 +3,8 @@ REST API of article site
 ## Stack
 - Go with [gin](https://github.com/gin-gonic/gin)
 - PostgreSQL
-- Docker
 - Redis
+- Docker
 ## Running
 ### Set environment variables in .env file
 ```bash
