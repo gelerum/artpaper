@@ -1,5 +1,6 @@
 # Artpaper
-REST API of site with articles## Stack
+REST API of site with articles
+## Stack
 - Go with [gin](https://github.com/gin-gonic/gin)
 - PostgreSQL
 - Redis
