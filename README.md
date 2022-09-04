@@ -41,6 +41,6 @@ docker-compose build
 docker-compose up
 ```
 ## Documentation
-For endpoints documentation open `0.0.0.0:8080/swagger/index.html` in browser
+For documentation open `0.0.0.0:8080/swagger/index.html` in browser while running.
 ## License
 Usage is provided under the [MIT License](https://opensource.org/licenses/mit-license.php). See LICENSE for the full details.
